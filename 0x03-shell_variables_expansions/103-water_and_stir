@@ -1,2 +1,2 @@
 #!/bin/bash
-b0VIM 8.1�Ocl� !rootbbe830b599d5~root/alx-system_engineering-devops/0x03-shell_variables_expansions/103-water_and_stirutf-8 U3210#"! Utadv����printf '%\n' $(printf '%\printf '%\n' $(( 5#$( echo $WATER | tr water 01234) + 5#$( echo $STIR | tr stir. 01234) )#!/bin/bash
+printf '%o\n' $(( 5#$( echo $WATER | tr water 01234) + 5#$( echo $STIR | tr stir. 01234 ) )) | tr 01234567 bestchol
