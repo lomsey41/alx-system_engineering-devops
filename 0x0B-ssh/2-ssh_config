@@ -1,4 +1,4 @@
-# Configure ssh client so that you can connect to a server without typing a password.
+# Config file
 Host *
     SendEnv LANG LC_*
     HashKnownHosts yes
