@@ -1,13 +1,20 @@
 #!/usr/bin/env bash
-# Configures a new Ubuntu server with a HAproxy load-balancer
-apt-get -y install software-properties-common
-add-apt-repository -y ppa:vbernat/haproxy-1.8
-apt-get -y update
-apt-get -y install haproxy=1.8.\*
-sed -i '/errorfile 504/a listen thelaura' /etc/haproxy/haproxy.cfg
-sed -i '/listen thelaura/a         bind :80' /etc/haproxy/haproxy.cfg
-sed -i '/bind :80/a         mode http' /etc/haproxy/haproxy.cfg
-sed -i '/mode http/a         server 2154-web-01 104.196.50.234:80 check' /etc/haproxy/haproxy.cfg
-sed -i '/server 2154-web-01 104.196.50.234:80 check/a         server 2154-web-02 35.237.11.53:80 check' /etc/haproxy/haproxy.cfg
-sed -i '/#EXTRAOPTS="-de -m 16"/a ENABLED=1' /etc/default/haproxy
-service haproxy start
+# Script that configures HAproxy in a load balancer
+CONFIG="
+frontend myfrontend
+    bind *:80
+    mode http
+    default_backend web_servers
+backend web_servers
+   balance roundrobin
+   server 6361-web-01 3.229.122.175:80 check
+   server 6361-web-02 35.171.146.79:80 check
+"
+sudo apt-get -y install software-properties-common
+sudo add-apt-repository -y ppa:vbernat/haproxy-2.0
+sudo apt-get -y update
+sudo apt-get -y install haproxy=2.0.\*
+# Backup original config file before attempt modifications
+sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.backup
+printf "%s" "$CONFIG" >> /etc/haproxy/haproxy.cfg
+sudo service haproxy restart
