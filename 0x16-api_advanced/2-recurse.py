@@ -1,30 +1,33 @@
 #!/usr/bin/python3
-"""Function to query a list of all hot posts on a given Reddit subreddit."""
-import requests
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Sep 17 11:47:53 2020
+
+@author: Robinson Montes
+"""
+from json import loads
+from requests import get
 
 
-def recurse(subreddit, hot_list=[], after="", count=0):
-    """Returns a list of titles of all hot posts on a given subreddit."""
-    url = "https://www.reddit.com/r/{}/hot/.json".format(subreddit)
+def recurse(subreddit, hot_list=[]):
+    """recursive function that queries the Reddit API and returns a list
+    containing the titles of all hot articles for a given subreddit. If no
+    results are found for the given subreddit, the function should return None.
+    """
+    url = 'https://www.reddit.com/r/{}/hot.json'.format(subreddit)
     headers = {
-        "User-Agent": "linux:0x16.api.advanced:v1.0.0 (by /u/bdov_)"
+        'User-Agent':
+        'Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.3) \
+        Gecko/20100401 Firefox/3.6.3 (FM Scene 4.6.1)'
     }
-    params = {
-        "after": after,
-        "count": count,
-        "limit": 100
-    }
-    response = requests.get(url, headers=headers, params=params,
-                            allow_redirects=False)
-    if response.status_code == 404:
-        return None
+    response = get(url, headers=headers, allow_redirects=False)
+    reddits = response.json()
 
-    results = response.json().get("data")
-    after = results.get("after")
-    count += results.get("dist")
-    for c in results.get("children"):
-        hot_list.append(c.get("data").get("title"))
-
-    if after is not None:
-        return recurse(subreddit, hot_list, after, count)
-    return hot_list
+    try:
+        children = reddits.get('data').get('children')
+        for title in children:
+            hot_list.append(title.get('data').get('title'))
+        return hot_list
+    except:
+        print(None)
+        return 0
