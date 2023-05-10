@@ -1,30 +1,21 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Sep 17 11:47:53 2020
-
-@author: Robinson Montes
-"""
-from json import loads
-from requests import get
+""" Exporting csv files"""
+import json
+import requests
+import sys
 
 
 def number_of_subscribers(subreddit):
-    """ecursive function that queries the Reddit API and returns a list
-    containing the titles of all hot articles for a given subreddit. If no
-    results are found for the given subreddit, the function should return None
-    """
+    """Read reddit API and return number subscribers """
+    username = 'ledbag123'
+    password = 'Reddit72'
+    user_pass_dict = {'user': username, 'passwd': password, 'api_type': 'json'}
+    headers = {'user-agent': '/u/ledbag123 API Python for Holberton School'}
     url = 'https://www.reddit.com/r/{}/about.json'.format(subreddit)
-    headers = {
-        'User-Agent':
-        'Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.3) \
-        Gecko/20100401 Firefox/3.6.3 (FM Scene 4.6.1)'
-    }
-    response = get(url, headers=headers)
-    reddits = response.json()
-
-    try:
-        subscribers = reddits.get('data').get('subscribers')
-        return int(subscribers)
-    except:
-        return 0
+    client = requests.session()
+    client.headers = headers
+    r = client.get(url, allow_redirects=False)
+    if r.status_code == 200:
+        return (r.json()["data"]["subscribers"])
+    else:
+        return(0)
