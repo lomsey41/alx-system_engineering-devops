@@ -1,35 +1,21 @@
-#!/bin/bash
-
-# Update package lists
-sudo apt update
-
-# Install HAProxy
-sudo apt install -y haproxy
-
-# Configure HAProxy
-sudo bash -c 'cat <<EOF > /etc/haproxy/haproxy.cfg
-global
-    daemon
-    maxconn 256
-
-defaults
-    mode http
-    timeout connect 5000ms
-    timeout client 50000ms
-    timeout server 50000ms
-
-frontend lomsey.tech
+#!/usr/bin/env bash
+# Script that configures HAproxy in a load balancer
+CONFIG="
+frontend myfrontend
     bind *:80
-    default_backend lomsey.tech
-
-backend lomsey.tech
-    balance roundrobin
-    server 146818-web-01 100.25.0.209:80 check
-    server 146818-web-02 54.164.154.242:80 check
-EOF'
-
-sudo sed -i 's/\[STUDENT_ID\]/YOUR_STUDENT_ID/g' /etc/haproxy/haproxy.cfg
-
-# Restart HAProxy
-sudo systemctl restart haproxy
+    mode http
+    default_backend web_servers
+backend web_servers
+   balance roundrobin
+   server 146818-web-01 100.25.0.209:80 check
+   server 146818-web-02 54.164.154.242:80 check
+"
+sudo apt-get -y install software-properties-common
+sudo add-apt-repository -y ppa:vbernat/haproxy-2.0
+sudo apt-get -y update
+sudo apt-get -y install haproxy=2.0.\*
+# Backup original config file before attempt modifications
+sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.backup
+printf "%s" "$CONFIG" >> /etc/haproxy/haproxy.cfg
+sudo service haproxy restart
 
