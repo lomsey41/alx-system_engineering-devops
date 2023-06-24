@@ -6,13 +6,53 @@ dns_config () {
     echo "$2 $script" | awk '{print "The subdomain " $1 " is a " $2 " record and points to " $3}'
 }
 
-if [ "$#" == 1 ]
-then
-  dns_config "$1" "www"
-  dns_config "$1" "lb-01"
-  dns_config "$1" "web-01"
-  dns_config "$1" "web-02"
-elif [ "$#" == 2 ]
-then
-  dns_config "$1" "$2"
-fi
+get_dns_records() {
+    local domain="$1"
+    local subdomain="$2"
+
+    # Modify this function to retrieve DNS records using your DNS provider's API or command-line tools
+
+    if [[ -z "$subdomain" ]]; then
+        # Display information for default subdomains
+        check_dns_record "$domain" "www"
+        check_dns_record "$domain" "lb-01"
+        check_dns_record "$domain" "web-01"
+        check_dns_record "$domain" "web-02"
+    else
+        # Display information for the specified subdomain
+        check_dns_record "$domain" "$subdomain"
+    fi
+}
+
+check_dns_record() {
+    local domain="$1"
+    local subdomain="$2"
+
+    # Modify this function to query DNS records using your DNS provider's API or command-line tools
+
+    # Example: Using 'dig' command to retrieve A record for the subdomain
+    record=$(dig +short "$subdomain.$domain" A)
+    
+    if [[ -n "$record" ]]; then
+        echo "The subdomain $subdomain is an A record and points to $record"
+    else
+        echo "The subdomain $subdomain does not have an A record"
+    fi
+}
+
+# Script entry point
+main() {
+    local domain="$1"
+    local subdomain="$2"
+
+    if [[ -z "$domain" ]]; then
+        echo "lomsey.tech."
+        exit 1
+    fi
+
+    get_dns_records "$domain" "$subdomain"
+}
+
+# Call the main function with provided arguments
+main "$@"
+
