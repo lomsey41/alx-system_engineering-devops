@@ -35,14 +35,10 @@ defaults
 
 frontend  lomsey.tech
         bind *:80
+        bind *:443 ssl crt /etc/ssl/private/lomsey.tech.pem
         mode http
-	http-request set-header X-Forwarded-Proto http
-        default_backend lomsey.tech_backend
-
-frontend lomsey.tech
-	bind *:443 ssl crt /etc/haproxy/certs/www.lomsey.tech.pem
-	http-request set-header X-Forwarded-Proto https
-	default_backend ;omsey.tech_backend
+        http-request set-header X-Forwarded-Proto https
+        default_backend www.lomsey.tech-backend
 
 backend lomsey.tech_backend
         balance roundrobin
