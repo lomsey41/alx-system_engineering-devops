@@ -33,19 +33,17 @@ defaults
 	errorfile 503 /etc/haproxy/errors/503.http
 	errorfile 504 /etc/haproxy/errors/504.http
 
-frontend  lomsey.tech
-        bind *:80
-        mode http
-	http-request set-header X-Forwarded-Proto http
-        default_backend lomsey.tech_backend
-
 frontend lomsey.tech
-	bind *:443 ssl crt /etc/haproxy/certs/www.lomsey.tech.pem
-	http-request set-header X-Forwarded-Proto https
-	http-request redirect scheme https code 301 unless { ssl_fc }
-	default_backend lomsey.tech_backend
+    bind *:80
+    bind *:443 ssl crt /etc/ssl/private/lomsey.tech.pem
+    mode http
+    http-request redirect scheme https code 301 if !{ ssl_fc }
+    http-request set-header X-Forwarded-Proto https
+    default_backend www.lomsey.tech-backend
 
-backend lomsey.tech_backend
-        balance roundrobin
-        server 146818-web-01 100.25.0.209:80 check
-        server 146818-web-02 54.164.154.242:80 check
+backend www.lomsey.tech-backend
+    balance roundrobin
+    server 146818-web-01 100.25.0.209:80 check
+    server 146818-web-02 54.164.154.242:80 check
+
+
