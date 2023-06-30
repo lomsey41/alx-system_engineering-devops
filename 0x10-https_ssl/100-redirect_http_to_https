@@ -35,10 +35,9 @@ defaults
 
 frontend lomsey.tech
         bind *:80
-        bind *:443 ssl crt /etc/ssl/private/lomsey.tech.pem
- mode http
-        http-request redirect scheme https code 301
-        http-request set-header X-Forwarded-Proto https
+        bind 0:443 ssl crt /etc/ssl/private/lomsey.tech.pem
+        http-request redirect scheme https code 301 unless { ssl_fc }
+        option forwardfor
         default_backend www.lomsey.tech-backend
 
 backend www.lomsey.tech-backend
